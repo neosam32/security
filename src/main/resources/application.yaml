@@ -1,0 +1,56 @@
+server:
+  port: 8000
+  servlet:
+    context-path: /
+    encoding:
+      charset: UTF-8
+      enabled: true
+      force: true
+    
+spring:
+  main:
+    allow-circular-references: true
+  profiles:
+    include:
+    - oauth2
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/hts?serverTimezone=Asia/Seoul&useSSL=false&allowPublicKeyRetrieval=true
+    username: htsDev
+    password: htsDev1234!
+   
+  jpa:
+    hibernate:
+      ddl-auto: update # create update 
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+    show-sql: true
+    
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: 268784453261-0hq5v9oda6d10utvnn6p64o4oc08f7q9.apps.googleusercontent.com
+            client-secret: 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
+            scope:
+            - email
+            - profile
+          
+        
+mybatis:
+  configuration:
+      multiple-result-sets-enabled: false    
+      map-underscore-to-camel-case: true    
+      call-setters-on-nulls: true        
+      jdbc-type-for-null: varchar    
+      default-fetch-size: 500  
+      
+logging:
+  level: 
+    root: error
+      
+
+          
+          
+    
