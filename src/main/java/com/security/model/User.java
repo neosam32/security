@@ -32,7 +32,6 @@ public class User {
 		this.providerId = providerId;
 		this.createDate = createDate;
 	}
-
 	@Id // primary key
     @GeneratedValue( strategy = GenerationType.IDENTITY )
      private int id;

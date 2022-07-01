@@ -11,6 +11,9 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 
 import com.security.auth.PrincipalDetails;
+import com.security.auth.provider.GoogleUserInfo;
+import com.security.auth.provider.NaverUserInfo;
+import com.security.auth.provider.OAuth2UserInfo;
 import com.security.model.User;
 import com.security.repository.UserRepository;
 
@@ -56,26 +59,43 @@ public class PrincipalOauth2UserService extends DefaultOAuth2UserService {
 		// 회원가입 강제 진행
 		OAuth2User oauth2User = super.loadUser(userRequest);
 		
-		String provider = userRequest.getClientRegistration().getClientId(); // 구글
-		String providerId = oauth2User.getAttribute("sub");
+		logger.error(" oauth2User.getAttributes()"+oauth2User.getAttributes());
+		
+		OAuth2UserInfo oAuth2UserInfo = null;
+		if( userRequest.getClientRegistration().getRegistrationId().equals("google"))
+		{
+			logger.error(" 구글 로그인 요청");
+			
+			oAuth2UserInfo = new GoogleUserInfo( oauth2User.getAttributes() );
+			
+		}else if( userRequest.getClientRegistration().getRegistrationId().equals("naver"))
+		{
+			logger.error(" 네이버 로그인 요청");
+			oAuth2UserInfo = new NaverUserInfo( oauth2User.getAttributes() );
+		}
+		
+		String provider = oAuth2UserInfo.getProvider(); // 구글
+		String providerId = oAuth2UserInfo.getProviderId();
 		String username = provider + "_" + providerId;
-		String email = oauth2User.getAttribute("email");
+		String email =  oAuth2UserInfo.getEmail();
 		String password = bCryptPasswordEncoder.encode("1111");
 		String role = "ROLE_USER";
 		
 		User userEntity = userRepository.findByEmail(email);
 		
+		logger.error(" userEntity = [{}]", userEntity);
+		
 		if( userEntity == null )
 		{
 			// 회원가입 
-			userEntity.builder().username(username)
+			userEntity = User.builder().username(username)
 			.password(password)
-			.provider(providerId)
+			.provider(provider)
 			.providerId(providerId)
 			.email(email)
 			.role(role)
 			.build();
-			
+			logger.error(" userEntity = [{}]", userEntity);
 			userRepository.save( userEntity  );
 			
 		}
